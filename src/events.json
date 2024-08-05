@@ -1,0 +1,16 @@
+{
+  "events": [
+    {
+      "id": "6027",
+      "title": "Jorge",
+      "with": "Prof. Margaux",
+      "time": {
+        "start": "2024-08-05 07:00",
+        "end": "2024-08-05 08:00"
+      },
+      "color": "green",
+      "description": "Hahahahaha.",
+      "isEditable": true
+    }
+  ]
+}
