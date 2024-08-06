@@ -11,7 +11,7 @@ import axios from "axios";
 
     onMounted(async () => {
         try {
-            const response = await axios.get('http://apiagenda.test/api/events');
+            const response = await axios.get('https://brasileirosemmontpellier.blog/api/events');
             let data = response.data;
             
             console.log(data);

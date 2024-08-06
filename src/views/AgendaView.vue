@@ -42,7 +42,7 @@ import { useToast } from "vue-toastification";
             // console.log(newEvent);
 
             try {
-                const request = await axios.post('http://apiagenda.test/api/events', newEvent);
+                const request = await axios.post('https://brasileirosemmontpellier.blog/api/events', newEvent);
                 // console.log(request);
                 getAllEvents();
                 router.push({ name: 'agenda' });
@@ -63,7 +63,7 @@ import { useToast } from "vue-toastification";
         const deleteEventClick = async (event) => {
             let eventId = event;
             try {
-                await axios.delete(`http://apiagenda.test/api/events/${eventId}`)
+                await axios.delete(`https://brasileirosemmontpellier.blog/api/events/${eventId}`)
                 getAllEvents();
                 router.push({ name: 'agenda' });
                 showModal.value = false;
@@ -95,7 +95,7 @@ import { useToast } from "vue-toastification";
 
     const getAllEvents = async (event) => {
         try {
-            const response = await axios.get("http://apiagenda.test/api/events");
+            const response = await axios.get("https://brasileirosemmontpellier.blog/api/events");
             let data = response.data;
             const formattedJson = {
                 "events": data.map(event => ({
