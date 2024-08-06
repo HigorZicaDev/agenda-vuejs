@@ -8,13 +8,19 @@ import axios from "axios";
         events: [],
     });
 
+    const hoje = new Date()
+    const dia = hoje.getDate().toString().padStart(2,'0')
+    const mes = String(hoje.getMonth() + 1).padStart(2,'0')
+    const ano = hoje.getFullYear()
+    const dataAtual = `${dia} / ${mes} / ${ano}`
+
 
     onMounted(async () => {
         try {
             const response = await axios.get('https://brasileirosemmontpellier.blog/api/events');
             let data = response.data;
             
-            console.log(data);
+            // console.log(data);
             const today = new Date().toISOString().split('T')[0];
 
             // Filtrar os eventos cujo time.start começa hoje
@@ -47,7 +53,7 @@ import axios from "axios";
     <PulseLoader class="loading-effect"></PulseLoader>
   </div>
   <div v-else  class="container">
-    <h3 class="text-3xl">Aulas de Hoje: 05/08/2024</h3>
+    <h3 class="text-3xl">Aulas de Hoje: {{ dataAtual }}</h3>
         <br>
           <div v-if="state.events.length < 1">
             Não tem agendamentos para a data de Hoje!
