@@ -19,13 +19,11 @@ import { useToast } from "vue-toastification";
         const form = reactive({
             student: '',
             teacher: '',
-            time: {
-                start: '',
-                end: ''
-            },
+            start: '',
+            end: '',
             color: '',
             description: '',
-            isEditable: true,
+            isEditable: 1,
         });
 
         const toast = useToast();
@@ -34,17 +32,18 @@ import { useToast } from "vue-toastification";
             const newEvent = {
                 title: form.student,
                 with: form.teacher,
-                time: {
-                    start: form.time.start.replace("T", " "),
-                    end: form.time.end.replace("T", " "),
-                },
+                start: form.start.replace("T", " "),
+                end: form.end.replace("T", " "),
                 color: form.color,
                 description: form.description,
-                isEditable: true,
+                isEditable: 1,
             };
 
+            // console.log(newEvent);
+
             try {
-                const response = await axios.post('http://localhost:5000/events', newEvent);
+                const request = await axios.post('http://apiagenda.test/api/events', newEvent);
+                // console.log(request);
                 getAllEvents();
                 router.push({ name: 'agenda' });
                 showModal.value = false;
@@ -64,7 +63,7 @@ import { useToast } from "vue-toastification";
         const deleteEventClick = async (event) => {
             let eventId = event;
             try {
-                await axios.delete(`http://localhost:5000/events/${eventId}`)
+                await axios.delete(`http://apiagenda.test/api/events/${eventId}`)
                 getAllEvents();
                 router.push({ name: 'agenda' });
                 showModal.value = false;
@@ -74,12 +73,16 @@ import { useToast } from "vue-toastification";
                 toast.error('Event Was Not Deleted');
             }
         };
+        
+        const editEventClick = async (event) => {
+            toast.warning('Não é possivel editar o evento no momento tente mais tarde!');
+        };
 
         const handleNewEventClick = (event) => {
             console.log(event);
             showModal.value = true;
-            form.time.start = event;
-            form.time.end = event;
+            form.start = event;
+            form.end = event;
         };
 
         const closeModalClick = (event) => {
@@ -90,14 +93,30 @@ import { useToast } from "vue-toastification";
         events.value = getAllEvents();
     });
 
-    const getAllEvents = async () => {
-        const response = await axios.get("http://localhost:5000/events").then((response) => {
-            events.value = response.data
-        }).finally(() => {
-            loading.value = false;
-        });
+    const getAllEvents = async (event) => {
+        try {
+            const response = await axios.get("http://apiagenda.test/api/events");
+            let data = response.data;
+            const formattedJson = {
+                "events": data.map(event => ({
+                    "id": event.id,
+                    "title": event.title,
+                    "with": event.with,
+                    "time": {
+                    "start": event.start,
+                    "end": event.end
+                    },
+                    "color": event.color,
+                    "description": event.description,
+                    "isEditable": event.isEditable
+                }))
+            };
+            events.value = formattedJson.events;
 
-        return events.value;
+            loading.value = false;
+        } catch (error) {
+            console.error('Error: ', error);
+        }
     }
 
 </script>
@@ -165,11 +184,11 @@ import { useToast } from "vue-toastification";
                                 <div class="flex w-96 mt-3 gap-4">
                                     <div class="flex flex-col">
                                         <label for="message" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Inicio:</label>
-                                        <input type="datetime-local" v-model="form.time.start" id="start" name="start" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="00:00"></input>
+                                        <input type="datetime-local" v-model="form.start" id="start" name="start" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="00:00"></input>
                                     </div>
                                     <div class="flex flex-col">
                                         <label for="message" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Final:</label>
-                                        <input type="datetime-local" v-model="form.time.end" id="end" name="end" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="00:00"></input>
+                                        <input type="datetime-local" v-model="form.end" id="end" name="end" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="00:00"></input>
                                     </div>
                                 </div> 
                             </div>
@@ -196,6 +215,7 @@ import { useToast } from "vue-toastification";
       @event-was-clicked="handleEventClick"
       @datetime-was-clicked="handleNewEventClick"
       @delete-event="deleteEventClick"
+      @edit-event="editEventClick"
     />
   </div>
 </template>

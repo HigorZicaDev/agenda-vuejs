@@ -11,22 +11,22 @@ import axios from "axios";
 
     onMounted(async () => {
         try {
-            const response = await axios.get('http://localhost:5000/events');
+            const response = await axios.get('http://apiagenda.test/api/events');
             let data = response.data;
             
-            // console.log(state.events);
+            console.log(data);
             const today = new Date().toISOString().split('T')[0];
 
             // Filtrar os eventos cujo time.start começa hoje
             const eventsToday = data.filter(event => {
-              return event.time.start.startsWith(today);
+              return event.start.startsWith(today);
             });
 
             // console.log(eventsToday);
 
-            // Ordenar os eventos pelo horário de início (time.start)
+            // Ordenar os eventos pelo horário de início (start)
             eventsToday.sort((a, b) => {
-              return new Date(a.time.start) - new Date(b.time.end);
+              return new Date(a.start) - new Date(b.end);
             });
 
             state.events = eventsToday;
@@ -57,7 +57,7 @@ import axios from "axios";
             class="px-4 py-2 bg-white hover:bg-sky-100 hover:text-sky-900 border-b last:border-none border-gray-200 transition-all duration-300 ease-in-out">
               <span class="text-xl font-medium">{{ event.title }}</span> <br>
               <span>{{ event.with }}</span> <br>
-              <span>Inicio: {{ event.time.start.slice(10, 16) }}</span> - <span>Final: {{ event.time.end.slice(10, 16) }}</span>
+              <span>Inicio: {{ event.start.slice(10, 16) }}</span> - <span>Final: {{ event.end.slice(10, 16) }}</span>
 
             </li>
 
